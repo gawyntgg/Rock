@@ -1,1 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Shake RPS</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            text-align: center; 
+            background: #1a1a1a; 
+            color: white;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
+        /* The Arena */
+        .game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            height: 200px;
+        }
+
+        .hand {
+            font-size: 80px;
+            transition: transform 0.2s;
+        }
+
+        /* The Pumping Animation */
+        .shaking {
+            animation: bounce 0.4s ease-in-out 3;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        /* Controls */
+        .choices { margin-top: 50px; }
+        button {
+            font-size: 1.5rem;
+            padding: 15px 25px;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 12px;
+            border: none;
+            background: #333;
+            color: white;
+            transition: 0.2s;
+        }
+        button:hover { background: #555; transform: translateY(-3px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #result { font-size: 1.5rem; margin-top: 20px; min-height: 40px; color: #ffd700; }
+        .score { margin-top: 20px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <h1>Rock Paper Scissors</h1>
+
+    <div class="game-container">
+        <div>
+            <div id="playerHand" class="hand">✊</div>
+            <p>YOU</p>
+        </div>
+        <div>
+            <div id="aiHand" class="hand">✊</div>
+            <p>AI</p>
+        </div>
+    </div>
+
+    <div id="result">Ready?</div>
+
+    <div class="choices">
+        <button onclick="play('Rock')">Rock</button>
+        <button onclick="play('Paper')">Paper</button>
+        <button onclick="play('Scissors')">Scissors</button>
+    </div>
+
+    <div class="score">You: <span id="uScore">0</span> | AI: <span id="aScore">0</span></div>
+
+    <script>
+        let userScore = 0;
+        let aiScore = 0;
+        const emojiMap = { 'Rock': '✊', 'Paper': '✋', 'Scissors': '✌️' };
+
+        function play(userChoice) {
+            const buttons = document.querySelectorAll('button');
+            const playerHand = document.getElementById('playerHand');
+            const aiHand = document.getElementById('aiHand');
+            const resultDisplay = document.getElementById('result');
+
+            // Disable buttons during animation
+            buttons.forEach(b => b.disabled = true);
+            
+            // Reset to Rock for the "shake"
+            playerHand.innerText = '✊';
+            aiHand.innerText = '✊';
+            resultDisplay.innerText = "Rock... Paper... Scissors...";
+
+            // Start the pump animation
+            playerHand.classList.add('shaking');
+            aiHand.classList.add('shaking');
+
+            // Wait for animation to finish (0.4s * 3 = 1.2s)
+            setTimeout(() => {
+                playerHand.classList.remove('shaking');
+                aiHand.classList.remove('shaking');
+
+                const choices = ['Rock', 'Paper', 'Scissors'];
+                const aiChoice = choices[Math.floor(Math.random() * 3)];
+
+                // Show actual moves
+                playerHand.innerText = emojiMap[userChoice];
+                aiHand.innerText = emojiMap[aiChoice];
+
+                // Determine Winner
+                let outcome = "";
+                if (userChoice === aiChoice) {
+                    outcome = "It's a Tie!";
+                } else if (
+                    (userChoice === 'Rock' && aiChoice === 'Scissors') ||
+                    (userChoice === 'Paper' && aiChoice === 'Rock') ||
+                    (userChoice === 'Scissors' && aiChoice === 'Paper')
+                ) {
+                    outcome = "You Win!";
+                    userScore++;
+                } else {
+                    outcome = "AI Wins!";
+                    aiScore++;
+                }
+
+                resultDisplay.innerText = outcome;
+                document.getElementById('uScore').innerText = userScore;
+                document.getElementById('aScore').innerText = aiScore;
+                
+                // Re-enable buttons
+                buttons.forEach(b => b.disabled = false);
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
